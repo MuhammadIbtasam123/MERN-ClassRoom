@@ -8,11 +8,6 @@ const Navbar = () => {
           href="https://flowbite.com/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          {/* <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="h-8"
-            alt="Flowbite Logo"
-          /> */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="10%"
