@@ -29,7 +29,7 @@ const SignupUser = () => {
                 type="email"
                 id="email"
                 name="email"
-                className="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                className="mt-1 p-2 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 placeholder="Enter your email"
               />
             </div>
@@ -44,14 +44,14 @@ const SignupUser = () => {
                 type="password"
                 id="password"
                 name="password"
-                className="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                className="mt-1 p-2 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                 placeholder="Enter your password"
               />
             </div>
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center w-full px-5 py-3 mr-3 text-base font-medium text-center text-white dark:bg-green-950 rounded-lg  bg-opacity-70 hover:bg-opacity-100 focus:ring-4 focus:ring-primary-300 shadow-lg focus:shadow-lg hover:shadow-xl focus:ring-opacity-50 hover:bg-blue-500 transition-all duration-300 ease-in-out"
+              className="inline-flex items-center justify-center w-full px-5 py-3 mr-3 text-base font-medium text-center text-white dark:bg-green-950 rounded-lg  bg-opacity-70 hover:bg-opacity-100 focus:ring-4 focus:ring-primary-300 shadow-lg focus:shadow-lg hover:shadow-xl focus:ring-opacity-50 hover:bg-green-500 transition-all duration-300 ease-in-out"
               // className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-200"
             >
               Login
@@ -59,7 +59,7 @@ const SignupUser = () => {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center w-full px-5 py-3 mr-3 mt-5 text-base font-medium text-center text-blue-950 bg-gradient-to-br from-sky-100 to-green-300 rounded-lg  bg-opacity-70 hover:bg-opacity-100 focus:ring-4 focus:ring-primary-300 shadow-lg focus:shadow-lg hover:shadow-xl focus:ring-opacity-50 hover:bg-blue-500 transition-all duration-300 ease-in-out"
+              className="inline-flex items-center justify-center w-full px-5 py-3 mr-3 mt-5 text-base font-medium text-center text-blue-950 bg-gradient-to-br from-sky-100 to-green-300 rounded-lg  bg-opacity-70 hover:bg-opacity-100 focus:ring-4 focus:ring-primary-300 shadow-lg focus:shadow-lg hover:shadow-xl focus:ring-opacity-50 hover:bg-green-500 transition-all duration-300 ease-in-out"
               // className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-200"
             >
               <img className="h-5 w-5 mr-3" src={google} alt="" />
