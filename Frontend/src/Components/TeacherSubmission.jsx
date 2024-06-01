@@ -39,7 +39,7 @@ const TeacherSubmission = () => {
 
   return (
     <div className="min-h-screen bg-green-950 text-white p-4 flex flex-col items-center">
-      <div className="bg-green-300 text-green-950 w-full rounded-lg shadow-md p-4 mb-4">
+      <div className="bg-green-300 text-green-950 max-w-screen-2xl rounded-lg shadow-md p-4 mb-4">
         <h2 className="text-2xl font-semibold mb-4">Student Submissions</h2>
         <div>
           {submissionData.map((submission) => (

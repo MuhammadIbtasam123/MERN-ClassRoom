@@ -3,7 +3,7 @@
 import google from "../assets/google.png";
 import { Link } from "react-router-dom";
 
-const SignupUser = () => {
+const LoginUser = () => {
   return (
     // <div className="h-FULL bg-blue-950 flex justify-center items-center">
     <div className="h-screen bg-green-950 flex justify-center items-center">
@@ -84,4 +84,4 @@ const SignupUser = () => {
   );
 };
 
-export default SignupUser;
+export default LoginUser;
