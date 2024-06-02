@@ -1,70 +1,49 @@
-const express = require("express");
+import express from "express";
+import {
+  signup,
+  login,
+  getStudentData,
+} from "../controllers/authController.controller.js";
+import { upload } from "../utils/storage.js";
+import { isAuthenticated, isTeacher, isStudent } from "../middleware/auth.js";
+
 const router = express.Router();
 
-const authController = require("./controllers/authController");
-const classController = require("./controllers/classController");
-const assignmentController = require("./controllers/assignmentController");
-const submissionController = require("./controllers/submissionController");
+// Authentication routes
+router.post("/signup", upload.single("image"), signup); // Handle image upload during signup
+router.post("/login", login);
+// Route that requires authentication
+router.get("/studentData", isAuthenticated, getStudentData);
+export default router;
+
+/*
+
+import express from "express";
+import { signup, login, getStudentData } from "../controllers/authController.controller.js";
+import { upload } from "../utils/storage.js";
+import { isAuthenticated, isTeacher, isStudent } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
 
 // Authentication routes
-router.post("/signup", authController.signup);
-router.post("/login", authController.login);
+router.post("/signup", upload.single("image"), signup); // Handle image upload during signup
+router.post("/login", login);
 
-// Class routes
-router.post(
-  "/classes/create",
-  authController.isTeacher,
-  classController.createClass
-);
-router.get(
-  "/classes/:classId",
-  authController.isAuthorized,
-  classController.getClassDetails
-);
-router.post(
-  "/classes/:classId/join",
-  authController.isStudent,
-  classController.joinClass
-);
-router.get("/classes", authController.isAuthorized, classController.getClasses);
+// Route that requires authentication
+router.get("/studentData", isAuthenticated, getStudentData);
 
-// Assignment routes
-router.post(
-  "/assignments/create",
-  authController.isTeacher,
-  assignmentController.createAssignment
-);
-router.get(
-  "/assignments/:assignmentId",
-  authController.isAuthorized,
-  assignmentController.getAssignmentDetails
-);
-router.get(
-  "/classes/:classId/assignments",
-  authController.isAuthorized,
-  assignmentController.getAssignmentsByClass
-);
+// Example route that requires authentication and checks if the user is a teacher
+router.get("/teacherOnlyRoute", isAuthenticated, isTeacher, (req, res) => {
+  // Logic for handling the route
+});
 
-// Submission routes
-router.post(
-  "/submissions/create",
-  authController.isStudent,
-  submissionController.createSubmission
-);
-router.get(
-  "/submissions/:submissionId",
-  authController.isAuthorized,
-  submissionController.getSubmissionDetails
-);
-router.post(
-  "/submissions/:submissionId/grade",
-  authController.isTeacher,
-  submissionController.gradeSubmission
-);
-router.get(
-  "/assignments/:assignmentId/submissions",
-  authController.isAuthorized,
-  submissionController.getSubmissionsByAssignment
-);
+// Example route that requires authentication and checks if the user is a student
+router.get("/studentOnlyRoute", isAuthenticated, isStudent, (req, res) => {
+  // Logic for handling the route
+});
 
-module.exports = router;
+export default router;
+
+
+
+*/

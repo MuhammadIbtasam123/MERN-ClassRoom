@@ -1,7 +1,12 @@
 import express from "express";
+import connectDB from "./config/db.js";
 import cors from "cors";
 import morgan from "morgan";
 import router from "./router/route.js";
+import imageRoutes from "./router/imageRoutes.js";
+
+const port = 8080;
+const app = express();
 
 /** middlewares */
 app.use(
@@ -14,8 +19,9 @@ app.use(
 app.use(cors());
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our
+app.use("/api", imageRoutes);
 
-const port = 8080;
+connectDB();
 
 /** HTTP GET Request */
 app.get("/", (req, res) => {
@@ -27,5 +33,5 @@ app.use("/api", router);
 
 // server
 app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port http://localhost:${port}`);
 });
