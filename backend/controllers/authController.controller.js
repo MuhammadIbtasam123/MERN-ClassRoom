@@ -96,3 +96,30 @@ export const getStudentData = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getTeacherData = async (req, res) => {
+  try {
+    const teacherData = await User.find({ role: "teacher" });
+    const responseData = await Promise.all(
+      teacherData.map(async (teacher) => {
+        // Construct the image URL using the image ID
+        return {
+          id: teacher._id,
+          name: teacher.name,
+          email: teacher.email,
+          gender: teacher.gender,
+          dateOfBirth: teacher.dateOfBirth.toLocaleDateString(),
+          address: teacher.address,
+          contactNumber: teacher.contactNumber,
+          imgId: teacher.imageUrl,
+          imageUrl: `http://localhost:8080/api/images/${teacher.imageId}`, // Include the image URL in the response
+        };
+      })
+    );
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error("Error fetching teacher data:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};

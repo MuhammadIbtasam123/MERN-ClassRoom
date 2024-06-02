@@ -5,6 +5,7 @@ import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import StudentDashboard from "./Pages/StudentDashboard";
 import StudentProfileData from "./Pages/StudentProfileData";
+import TeacherProfile from "./Pages/TeacherProfile";
 import TeacherDashboard from "./Pages/TeacherDashboard";
 import CreateClass from "./Pages/CreateClass";
 import TeacherStudentData from "./Pages/TeacherStudentData";
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/studentProfile" element={<StudentProfileData />} />
         <Route path="/studentClassroom" element={<StudentClassroom />} />
+        <Route path="/teacherProfile" element={<TeacherProfile />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
         <Route path="/newClass" element={<CreateClass />} />
         <Route

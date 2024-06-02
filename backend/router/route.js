@@ -3,7 +3,9 @@ import {
   signup,
   login,
   getStudentData,
+  getTeacherData,
 } from "../controllers/authController.controller.js";
+import { createClass, getClasses } from "../controllers/Class.controller.js";
 import { upload } from "../utils/storage.js";
 import { isAuthenticated, isTeacher, isStudent } from "../middleware/auth.js";
 
@@ -14,6 +16,12 @@ router.post("/signup", upload.single("image"), signup); // Handle image upload d
 router.post("/login", login);
 // Route that requires authentication
 router.get("/studentData", isAuthenticated, getStudentData);
+router.get("/teacherData", isAuthenticated, isTeacher, getTeacherData);
+
+/* Class related routes */
+router.route("/createClass").post(isAuthenticated, isTeacher, createClass);
+router.route("/getClasses").get(isAuthenticated, isTeacher, getClasses);
+
 export default router;
 
 /*

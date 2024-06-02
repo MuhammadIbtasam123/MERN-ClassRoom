@@ -1,5 +1,5 @@
 // import React from 'react';
-import user from "../assets/USer.png";
+
 const NavBar = () => {
   return (
     <nav className="bg-green-950 p-4 flex justify-between items-center">
@@ -22,12 +22,15 @@ const NavBar = () => {
         </span>
       </div>
       <div className="flex items-center">
-        <button className="text-white mr-4">Sign Out</button>
-        <img
-          src={user}
-          alt="Student Profile"
-          className="h-8 w-8 rounded-full"
-        />
+        <button
+          className="text-white mr-4"
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.href = "/Login";
+          }}
+        >
+          Sign Out
+        </button>
       </div>
     </nav>
   );
