@@ -72,7 +72,14 @@ export const login = async (req, res) => {
 
 export const getStudentData = async (req, res) => {
   try {
-    const studentData = await User.find({ role: "student" });
+    const { userId } = req.user;
+    console.log(userId);
+
+    const studentData = await User.find({
+      role: "student",
+      _id: userId,
+    });
+
     const responseData = await Promise.all(
       studentData.map(async (student) => {
         // Construct the image URL using the image ID

@@ -1,28 +1,10 @@
-// export const createInviteLink = async (req, res) => {
+// Helper function to convert a stream to a Base64 string
+const streamToBase64 = async (stream) =>
+  new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
+  });
 
-//     try {
-//         const { classId } = req.params;
-//         const classToInvite = await Class.findById(classId);
-
-//         if (!classToInvite) {
-//         return res.status(404).json({ message: "Class not found" });
-//         }
-
-//         if (classToInvite.teacherID.toString() !== req.user._id.toString()) {
-//         return res.status(401).json({ message: "Unauthorized" });
-//         }
-
-//         if (classToInvite.inviteLink) {
-//         return res.status(200).json({ inviteLink: classToInvite.inviteLink });
-//         }
-
-//         const inviteLink = `${req.protocol}://${req.get("host")}/join/${classId}`;
-//         classToInvite.inviteLink = inviteLink;
-//         await classToInvite.save();
-
-//         res.status(200).json({ inviteLink });
-//     } catch (error) {
-//         console.error("Error creating invite link:", error);
-//         res.status(500).json({ message: "Something went wrong" });
-//     }
-// };
+export default streamToBase64;

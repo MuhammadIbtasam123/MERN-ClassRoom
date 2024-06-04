@@ -4,7 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import router from "./router/route.js";
 import imageRoutes from "./router/imageRoutes.js";
-
+import getAssignemntRoute from "./router/getAssignemntRoute.js";
 const port = 8080;
 const app = express();
 
@@ -20,6 +20,7 @@ app.use(cors());
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our
 app.use("/api", imageRoutes);
+app.use("/api", getAssignemntRoute);
 
 connectDB();
 

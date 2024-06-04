@@ -11,7 +11,7 @@ conn.once("open", () => {
   // No need to specify the bucket name here since it's using the default
 });
 
-export const getImage = async (req, res) => {
+export const getAssignemnt = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(req.params.id);
