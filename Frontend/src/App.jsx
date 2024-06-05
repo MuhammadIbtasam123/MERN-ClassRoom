@@ -12,6 +12,7 @@ import TeacherStudentData from "./Pages/TeacherStudentData";
 import StudentClassroom from "./Pages/StudentClassroom";
 import TeacherAssignmentUpload from "./Pages/TeacherAssignmentUpload";
 import TeacherSubmissionPage from "./Pages/TeacherSubmissionPage";
+import JoinClass from "./Pages/JoinClass";
 
 const App = () => {
   return (
@@ -22,10 +23,11 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/studentProfile" element={<StudentProfileData />} />
-        <Route path="/studentClassroom" element={<StudentClassroom />} />
+        <Route path="/studentClassroom/:id" element={<StudentClassroom />} />
         <Route path="/teacherProfile" element={<TeacherProfile />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
         <Route path="/newClass" element={<CreateClass />} />
+        <Route path="/student/join-class/:id" element={<JoinClass />} />
         <Route
           path="/teacher/students/:classroomId"
           element={<TeacherStudentData />}

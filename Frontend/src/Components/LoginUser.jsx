@@ -67,6 +67,7 @@ const LoginUser = () => {
       }, 3000);
     } catch (error) {
       console.error("Error logging in:", error);
+      showToast(error.response.data.message, "error");
       // Handle login error (e.g., display error message to the user)
     }
   };

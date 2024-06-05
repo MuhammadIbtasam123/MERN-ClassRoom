@@ -1,38 +1,58 @@
-// import React from "react";
+import { useEffect, useState } from "react";
 import classroomImg from "../assets/idea-text-brain-drawn-outline-face-blackboard.jpg";
+import PropTypes from "prop-types";
+import AssignmentCard from "./AssignmentCard";
+import axios from "axios";
 
 const AnnouncementCard = () => (
   <div className="bg-white p-4 rounded shadow mb-4">
     <h3 className="text-lg font-semibold mb-2">Announcements</h3>
-    <p>Latest announcement goes here.</p>
+    <p>Teacher announcement...</p>
   </div>
 );
 
-const AssignmentCard = () => (
-  <div className="bg-white p-4 rounded shadow mb-4">
-    <h3 className="text-lg font-semibold mb-2">Assignments</h3>
-    <ul>
-      <li>
-        <a href="path/to/assignment.pdf" download className="text-green-500">
-          Assignment 1
-        </a>
-      </li>
-      {/* Add more assignments as needed */}
-    </ul>
-  </div>
-);
+const ClassRoom = ({ classId }) => {
+  const [classData, setClassData] = useState([
+    [
+      {
+        assignmentFile: "665ec64ace9439ff7b81e901",
+        classID: "665cf1289ecbcb7834dc879a",
+        description: "programming?",
+        dueDate: "2024-06-07T19:00:00.000Z",
+        name: "assignment 1",
+      },
+    ],
+  ]);
+  const [showAssignment, setShowAssignment] = useState(false);
 
-const SubmissionCard = () => (
-  <div className="bg-white p-4 rounded shadow mb-4">
-    <h3 className="text-lg font-semibold mb-2">Submit Assignment</h3>
-    <input type="file" className="mb-2" />
-    <button className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">
-      Submit
-    </button>
-  </div>
-);
+  useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/ClassData/${classId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setClassData(response.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
 
-const ClassRoom = () => {
+    fetchClassData();
+  }, [classId]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowAssignment(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+  console.log(classData.classes);
   return (
     <div className="flex-1 p-4">
       <h2 className="text-2xl font-semibold mb-4">Classroom</h2>
@@ -43,14 +63,22 @@ const ClassRoom = () => {
           className="h-16 w-16 rounded-full mr-4"
         />
         <div>
-          <h3 className="text-lg font-semibold">Class Name</h3>
+          {classData.classes && (
+            <h3 className="text-lg font-semibold">
+              Class Name: {classData.classes.subject} -{" "}
+              {classData.classes.section}
+            </h3>
+          )}
         </div>
       </div>
       <AnnouncementCard />
-      <AssignmentCard />
-      <SubmissionCard />
+      {showAssignment && <AssignmentCard assignments={classData} />}
     </div>
   );
+};
+
+ClassRoom.propTypes = {
+  classId: PropTypes.string.isRequired,
 };
 
 export default ClassRoom;

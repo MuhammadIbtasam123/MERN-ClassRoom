@@ -199,7 +199,7 @@ export const getClassData = async (req, res) => {
 
     // Construct the response
     const responseData = {
-      classData: classes,
+      classes,
       assignments: assignmentsWithFileData,
     };
 

@@ -3,19 +3,7 @@ import TeacherAddStudent from "./TeacherAddStudent";
 import PropTypes from "prop-types";
 
 const TeacherStudent = ({ enrolledStudents, allStudents }) => {
-  const [students, setStudents] = useState(enrolledStudents);
   const [showAddStudent, setShowAddStudent] = useState(false);
-
-  const removeStudent = (email) => {
-    setStudents(students.filter((student) => student.email !== email));
-  };
-
-  const addStudentToClass = (student) => {
-    if (!students.find((s) => s.email === student.email)) {
-      setStudents([...students, student]);
-    }
-    setShowAddStudent(false);
-  };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
@@ -38,16 +26,13 @@ const TeacherStudent = ({ enrolledStudents, allStudents }) => {
           </tr>
         </thead>
         <tbody>
-          {students.map((student, index) => (
+          {enrolledStudents.map((student) => (
             <tr key={student.email}>
-              <td className="border-b p-2">{index + 1}</td>
+              <td className="border-b p-2">{student._id}</td>
               <td className="border-b p-2">{student.name}</td>
               <td className="border-b p-2">{student.email}</td>
               <td className="border-b p-2">
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={() => removeStudent(student.email)}
-                >
+                <button className="bg-red-500 text-white px-4 py-2 rounded">
                   Remove
                 </button>
               </td>
@@ -58,7 +43,6 @@ const TeacherStudent = ({ enrolledStudents, allStudents }) => {
       {showAddStudent && (
         <TeacherAddStudent
           allStudents={allStudents}
-          addStudentToClass={addStudentToClass}
           close={() => setShowAddStudent(false)}
         />
       )}
