@@ -1,4 +1,3 @@
-// const mongoose = require("mongoose");
 import mongoose from "mongoose";
 
 const assignmentSchema = new mongoose.Schema({
@@ -14,6 +13,19 @@ const assignmentSchema = new mongoose.Schema({
   assignmentFile: { type: String },
   rubric: { type: String },
   testCases: [{ type: String }],
+  assignmentText: { type: String },
+  rubricText: { type: String },
+  submissions: [
+    {
+      student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      file: { type: String, required: true },
+      extractedText: { type: String, required: true },
+    },
+  ],
 });
 
 const Assignment = mongoose.model("Assignment", assignmentSchema);

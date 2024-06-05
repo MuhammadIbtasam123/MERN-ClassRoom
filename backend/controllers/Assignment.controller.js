@@ -2,36 +2,67 @@
 import Assignment from "../model/assignments.model.js";
 import Submission from "../model/submissions.model.js";
 import User from "../model/users.model.js";
+import mongoose from "mongoose";
+import extractTextFromImage from "../helperFunctions/extractTextFromImage.js";
 
+// Utility function to convert stream to buffer
+const streamToBuffer = async (stream) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+};
+
+// Upload Assignment Controller
 export const uploadAssignment = async (req, res) => {
   try {
     const { name, description, dueDate, type, classID } = req.body;
 
-    console.log(
-      "Assignment File ID:",
-      req.files.assignmentFile ? req.files.assignmentFile[0].id : null
-    );
-    console.log(
-      "Rubric File ID:",
-      req.files.rubricFile ? req.files.rubricFile[0].id : null
-    );
-    console.log(
-      "Test Case File IDs:",
-      req.files.testCasesFile
-        ? req.files.testCasesFile.map((file) => file.id)
-        : []
-    );
+    const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
+
+    // Extract text from the assignment file
+    let assignmentText = "";
+    if (
+      req.files &&
+      req.files.assignmentFile &&
+      req.files.assignmentFile.length > 0
+    ) {
+      const assignmentFileId = req.files.assignmentFile[0].id;
+      const assignmentFileStream = bucket.openDownloadStream(
+        new mongoose.Types.ObjectId(assignmentFileId)
+      );
+      const assignmentFileBuffer = await streamToBuffer(assignmentFileStream);
+      assignmentText = await extractTextFromImage(assignmentFileBuffer);
+    }
+
+    // Extract text from the rubric file
+    let rubricText = "";
+    if (req.files && req.files.rubricFile && req.files.rubricFile.length > 0) {
+      const rubricFileId = req.files.rubricFile[0].id;
+      const rubricFileStream = bucket.openDownloadStream(
+        new mongoose.Types.ObjectId(rubricFileId)
+      );
+      const rubricFileBuffer = await streamToBuffer(rubricFileStream);
+      rubricText = await extractTextFromImage(rubricFileBuffer);
+    }
+
     const newAssignment = new Assignment({
       name,
       description,
       dueDate,
       type,
       classID,
-      assignmentFile: req.files.assignmentFile[0].id,
+      assignmentFile: req.files.assignmentFile
+        ? req.files.assignmentFile[0].id
+        : null,
       rubric: req.files.rubricFile ? req.files.rubricFile[0].id : null,
       testCases: req.files.testCasesFile
         ? req.files.testCasesFile.map((file) => file.id)
         : [],
+      assignmentText,
+      rubricText,
     });
 
     await newAssignment.save();
@@ -45,42 +76,6 @@ export const uploadAssignment = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
-
-// exports.gradeAssignment = async (req, res) => {
-//   try {
-//     const { submissionId } = req.params;
-//     const { solution } = req.body;
-//     const submission = await Submission.findById(submissionId).populate(
-//       "assignmentID"
-//     );
-
-//     if (!submission) {
-//       return res.status(404).json({ message: "Submission not found" });
-//     }
-
-//     const { prompt, rubric } = submission.assignmentID;
-
-//     if (submission.assignmentID.type === "theory") {
-//       const feedback = await generateFeedback(prompt, rubric, solution);
-//       submission.feedback = feedback;
-//       submission.grade = feedback.includes("Grade: ")
-//         ? parseInt(feedback.split("Grade: ")[1])
-//         : 0;
-//     } else {
-//       // Implement grading logic for coding assignments
-//     }
-
-//     await submission.save();
-
-//     res
-//       .status(200)
-//       .json({ message: "Submission graded successfully", submission });
-//   } catch (error) {
-//     console.error("Error grading submission:", error);
-//     res.status(500).json({ message: "Something went wrong" });
-//   }
-// };
-
 export const uploadAssignmentByStudent = async (req, res) => {
   try {
     const { id } = req.params;
