@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 const AssignmentCard = ({ assignments }) => {
   console.log(assignments.assignments);
   const [file, setFile] = useState(null);
+  const [Marks, setMarks] = useState("");
 
   const showToast = (message, type) => {
     toast[type](message, {
@@ -58,6 +59,31 @@ const AssignmentCard = ({ assignments }) => {
       // Handle error
     }
   };
+
+  const getMarksByStudents = async (assignmentId) => {
+    try {
+      console.log("Assignment ID:", assignmentId);
+      const response = await axios.get(
+        `http://localhost:8080/api/getMarksStudent/${assignmentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log("Marks:", response.data);
+      setMarks(response.data);
+
+      if (response.status === 200) {
+        showToast(response.data.message, "success");
+      }
+    } catch (error) {
+      console.error("Error fetching marks:", error);
+      showToast("Error fetching marks!", "error");
+    }
+  };
+
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
       <h3 className="text-lg font-semibold mb-2">Assignments</h3>
@@ -87,6 +113,22 @@ const AssignmentCard = ({ assignments }) => {
                 onClick={() => handleSubmit(assignment._id)}
               >
                 Submit
+              </button>
+              <h3 className="text-lg font-semibold mb- mt-5 mb-2">
+                Assignment Results
+              </h3>
+              {Marks ? (
+                <p className="text-black font-bold text-lg">Marks: {Marks}</p>
+              ) : (
+                <p className="text-black font-bold text-lg">
+                  Marks: Not yet graded
+                </p>
+              )}
+              <button
+                className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition ml-0"
+                onClick={() => getMarksByStudents(assignment._id)}
+              >
+                View Marks
               </button>
             </div>
           </li>

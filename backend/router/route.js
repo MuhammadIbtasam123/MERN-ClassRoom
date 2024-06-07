@@ -20,7 +20,10 @@ import {
   uploadAssignmentByStudent,
   getSubmittedAssignments,
   getSubmissions,
-} from "../controllers/assignment.controller.js";
+  assignmentEvaluation,
+  getMArks,
+  getMarksByStudents,
+} from "../controllers/Assignment.controller.js";
 import { upload } from "../utils/storage.js"; // Ensure this points to your GridFS storage configuration
 import { isAuthenticated, isTeacher, isStudent } from "../middleware/auth.js";
 
@@ -43,6 +46,11 @@ router.post(
   upload.single("file"),
   uploadAssignmentByStudent
 );
+
+router
+  .route("/getMarksStudent/:AssignmentId")
+  .get(isAuthenticated, isStudent, getMarksByStudents);
+
 /* Student Invite Link */
 router.route("/sendInvite").post(isAuthenticated, isTeacher, sendInvite);
 router.get("/teacherData", isAuthenticated, isTeacher, getTeacherData);
@@ -81,5 +89,17 @@ router.get(
   isTeacher,
   getSubmissions
 );
+
+// AssignmentEvalutaion
+router.post(
+  "/evaluateSubmission/:SubmissionId",
+  isAuthenticated,
+  isTeacher,
+  assignmentEvaluation
+);
+
+router
+  .route("/getMarks/:SubmissionId")
+  .get(isAuthenticated, isTeacher, getMArks);
 
 export default router;

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const submissionSchema = new mongoose.Schema({
   studentID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +17,9 @@ const submissionSchema = new mongoose.Schema({
     required: true,
   },
   solution: { type: String, required: true },
+  solutionText: { type: String }, // New field to store extracted text
   grade: { type: Number, default: 0 },
+  feedback: { type: String },
 });
 
 const Submission = mongoose.model("Submission", submissionSchema);

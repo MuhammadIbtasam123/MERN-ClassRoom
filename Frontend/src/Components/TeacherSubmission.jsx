@@ -6,6 +6,7 @@ const TeacherSubmission = () => {
   const [assignments, setAssignments] = useState([]);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [studentDetails, setStudentDetails] = useState([]);
+  const [Marks, setMarks] = useState("");
   const { classroomId } = useParams();
 
   // Fetch assignments from the backend
@@ -101,6 +102,44 @@ const TeacherSubmission = () => {
     fetchStudentSubmissionsDetails(assignmentId);
   };
 
+  const EvaluateAssignment = async (submissionId) => {
+    try {
+      console.log("Submission ID:", submissionId);
+      const response = await axios.post(
+        `http://localhost:8080/api/evaluateSubmission/${submissionId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Assignment evaluated successfully:", response.data);
+      console.log("Marks:", response.data.submission.grade);
+      setMarks(response.data.submission.grade);
+    } catch (error) {
+      console.error("Error evaluating assignment:", error);
+    }
+  };
+
+  const GetAssignmentMarks = async (submissionId) => {
+    try {
+      console.log("Submission ID:", submissionId);
+      const response = await axios.get(
+        `http://localhost:8080/api/getMarks/${submissionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Marks:", response.data.submission.grade);
+      setMarks(response.data.submission.grade);
+    } catch (error) {
+      console.error("Error fetching marks:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-green-950 text-white p-4 flex flex-col items-center">
       <div className="bg-green-300 text-green-950 w-full rounded-lg shadow-md p-4 mb-4">
@@ -164,6 +203,8 @@ const TeacherSubmission = () => {
                   <th>Name</th>
                   <th>ID</th>
                   <th>View Solution</th>
+                  <th>Evaluate Assignment</th>
+                  <th>Marks</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,6 +225,34 @@ const TeacherSubmission = () => {
                       >
                         View Solution
                       </button>
+                    </td>
+                    <td className="text-center pt-4">
+                      <button
+                        className="bg-green-500 text-white px-4 py-2 rounded"
+                        onClick={() =>
+                          EvaluateAssignment(submission.submission._id)
+                        }
+                      >
+                        Evaluate Assignment
+                      </button>
+                    </td>
+                    <td className="text-center pt-4 flex items-center justify-center">
+                      {!Marks && (
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded mr-5"
+                          onClick={() =>
+                            GetAssignmentMarks(submission.submission._id)
+                          }
+                        >
+                          Show Marks
+                        </button>
+                      )}
+
+                      {Marks && (
+                        <h3 className="text-lg font-semibold mb-2 ">
+                          Marks: {Marks}
+                        </h3>
+                      )}
                     </td>
                   </tr>
                 ))}

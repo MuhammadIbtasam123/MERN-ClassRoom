@@ -9,6 +9,7 @@ export default function connectDB() {
     mongoose.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
     });
   } catch (err) {
     console.error(err.message);
