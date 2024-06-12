@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 const AssignmentCard = ({ assignments }) => {
   console.log(assignments.assignments);
   const [file, setFile] = useState(null);
-  const [Marks, setMarks] = useState("");
+  const [marks, setMarks] = useState({}); // Change from a single marks state to an object
 
   const showToast = (message, type) => {
     toast[type](message, {
@@ -55,7 +55,7 @@ const AssignmentCard = ({ assignments }) => {
       // Add any additional logic here after successful upload
     } catch (error) {
       console.error("Error uploading file:", error);
-      showToast("Assignemnt already submitted!", "error");
+      showToast("Assignment already submitted!", "error");
       // Handle error
     }
   };
@@ -73,7 +73,11 @@ const AssignmentCard = ({ assignments }) => {
       );
 
       console.log("Marks:", response.data);
-      setMarks(response.data);
+
+      setMarks((prevMarks) => ({
+        ...prevMarks,
+        [assignmentId]: response.data,
+      }));
 
       if (response.status === 200) {
         showToast(response.data.message, "success");
@@ -117,8 +121,10 @@ const AssignmentCard = ({ assignments }) => {
               <h3 className="text-lg font-semibold mb- mt-5 mb-2">
                 Assignment Results
               </h3>
-              {Marks ? (
-                <p className="text-black font-bold text-lg">Marks: {Marks}</p>
+              {marks[assignment._id] ? (
+                <p className="text-black font-bold text-lg">
+                  Marks: {marks[assignment._id]}
+                </p>
               ) : (
                 <p className="text-black font-bold text-lg">
                   Marks: Not yet graded
