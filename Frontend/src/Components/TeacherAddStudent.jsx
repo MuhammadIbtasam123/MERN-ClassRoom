@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const TeacherAddStudent = ({ allStudents, addStudentToClass, close }) => {
+const TeacherAddStudent = ({ allStudents, close }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { classroomId } = useParams();
 
@@ -44,7 +44,7 @@ const TeacherAddStudent = ({ allStudents, addStudentToClass, close }) => {
           },
         }
       );
-      addStudentToClass(student);
+      console.log("response", response.status); // Placeholder for actual invite logic
       if (response.status === 200 || response.status === 201) {
         showToast(response.data.message, "success");
       }

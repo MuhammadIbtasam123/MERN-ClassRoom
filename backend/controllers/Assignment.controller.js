@@ -21,6 +21,8 @@ export const uploadAssignment = async (req, res) => {
   try {
     const { name, description, dueDate, type, classID } = req.body;
 
+    console.log(req.body);
+
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
 
     // Extract text from the assignment file

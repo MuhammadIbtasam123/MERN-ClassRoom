@@ -20,7 +20,7 @@ export const sendInvite = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Joined class successfully", class: classToJoin });
+      .json({ message: "Send Invite Link successfully!", class: classToJoin });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong" });
