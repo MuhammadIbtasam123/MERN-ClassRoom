@@ -4,7 +4,9 @@ import Submission from "../model/submissions.model.js";
 import User from "../model/users.model.js";
 import mongoose from "mongoose";
 import extractTextFromImage from "../helperFunctions/extractTextFromImage.js";
+import { extractTextFromPdf } from "../helperFunctions/extractTextFromPdf.js";
 import { generateFeedback } from "../BardModel/Feedback.js";
+import { evaluateCodingAssignment } from "../BardModel/evaluateCodingAssignemnt.js";
 
 // Utility function to convert stream to buffer
 const streamToBuffer = async (stream) => {
@@ -17,40 +19,137 @@ const streamToBuffer = async (stream) => {
 };
 
 // Upload Assignment Controller
+// export const uploadAssignment = async (req, res) => {
+//   try {
+//     const { name, description, dueDate, type, classID } = req.body;
+
+//     console.log(req.body);
+//     console.log(req.files);
+
+//     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
+
+//     // Extract text from the assignment file
+//     let assignmentText = "";
+//     if (
+//       req.files &&
+//       req.files.assignmentFile &&
+//       req.files.assignmentFile.length > 0
+//     ) {
+//       const assignmentFileId = req.files.assignmentFile[0].id;
+//       const assignmentFileStream = bucket.openDownloadStream(
+//         new mongoose.Types.ObjectId(assignmentFileId)
+//       );
+//       const assignmentFileBuffer = await streamToBuffer(assignmentFileStream);
+//       assignmentText = await extractTextFromImage(assignmentFileBuffer);
+//       console.log("Assignment Text:", assignmentText);
+//     }
+
+//     // Extract text from the rubric file
+//     let rubricText = "";
+//     if (req.files && req.files.rubricFile && req.files.rubricFile.length > 0) {
+//       const rubricFileId = req.files.rubricFile[0].id;
+//       const rubricFileStream = bucket.openDownloadStream(
+//         new mongoose.Types.ObjectId(rubricFileId)
+//       );
+//       const rubricFileBuffer = await streamToBuffer(rubricFileStream);
+//       rubricText = await extractTextFromImage(rubricFileBuffer);
+//       console.log("Rubric Text:", rubricText);
+//     }
+
+//     const newAssignment = new Assignment({
+//       name,
+//       description,
+//       dueDate,
+//       type,
+//       classID,
+//       assignmentFile: req.files.assignmentFile
+//         ? req.files.assignmentFile[0].id
+//         : null,
+//       rubric: req.files.rubricFile ? req.files.rubricFile[0].id : null,
+//       testCases: req.files.testCasesFile
+//         ? req.files.testCasesFile.map((file) => file.id)
+//         : [],
+//       assignmentText,
+//       rubricText,
+//     });
+
+//     await newAssignment.save();
+
+//     res.status(201).json({
+//       message: "Assignment created successfully",
+//       assignment: newAssignment,
+//     });
+//   } catch (error) {
+//     console.error("Error creating assignment:", error);
+//     res.status(500).json({ message: "Something went wrong" });
+//   }
+// };
 export const uploadAssignment = async (req, res) => {
   try {
     const { name, description, dueDate, type, classID } = req.body;
 
-    console.log(req.body);
-
     const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
 
-    // Extract text from the assignment file
     let assignmentText = "";
-    if (
-      req.files &&
-      req.files.assignmentFile &&
-      req.files.assignmentFile.length > 0
-    ) {
-      const assignmentFileId = req.files.assignmentFile[0].id;
-      const assignmentFileStream = bucket.openDownloadStream(
-        new mongoose.Types.ObjectId(assignmentFileId)
-      );
-      const assignmentFileBuffer = await streamToBuffer(assignmentFileStream);
-      assignmentText = await extractTextFromImage(assignmentFileBuffer);
-      console.log("Assignment Text:", assignmentText);
-    }
+    let rubricText = ""; // This remains for theory type assignments
+    let testCasesText = ""; // This will be used for coding assignments
 
-    // Extract text from the rubric file
-    let rubricText = "";
-    if (req.files && req.files.rubricFile && req.files.rubricFile.length > 0) {
-      const rubricFileId = req.files.rubricFile[0].id;
-      const rubricFileStream = bucket.openDownloadStream(
-        new mongoose.Types.ObjectId(rubricFileId)
-      );
-      const rubricFileBuffer = await streamToBuffer(rubricFileStream);
-      rubricText = await extractTextFromImage(rubricFileBuffer);
-      console.log("Rubric Text:", rubricText);
+    if (type === "theory") {
+      if (
+        req.files &&
+        req.files.assignmentFile &&
+        req.files.assignmentFile.length > 0
+      ) {
+        const assignmentFileId = req.files.assignmentFile[0].id;
+        const assignmentFileStream = bucket.openDownloadStream(
+          new mongoose.Types.ObjectId(assignmentFileId)
+        );
+        const assignmentFileBuffer = await streamToBuffer(assignmentFileStream);
+        assignmentText = await extractTextFromImage(assignmentFileBuffer);
+      }
+
+      if (
+        req.files &&
+        req.files.rubricFile &&
+        req.files.rubricFile.length > 0
+      ) {
+        const rubricFileId = req.files.rubricFile[0].id;
+        const rubricFileStream = bucket.openDownloadStream(
+          new mongoose.Types.ObjectId(rubricFileId)
+        );
+        const rubricFileBuffer = await streamToBuffer(rubricFileStream);
+        rubricText = await extractTextFromImage(rubricFileBuffer);
+      }
+    } else if (type === "coding") {
+      if (
+        req.files &&
+        req.files.assignmentFile &&
+        req.files.assignmentFile.length > 0
+      ) {
+        const assignmentFileId = req.files.assignmentFile[0].id;
+        const assignmentFileStream = bucket.openDownloadStream(
+          new mongoose.Types.ObjectId(assignmentFileId)
+        );
+        const assignmentFileBuffer = await streamToBuffer(assignmentFileStream);
+        assignmentText = await extractTextFromPdf(assignmentFileBuffer);
+
+        console.log("Assignment Text:", assignmentText);
+      }
+
+      if (
+        req.files &&
+        req.files.testCasesFile &&
+        req.files.testCasesFile.length > 0
+      ) {
+        const testCasesFileId = req.files.testCasesFile[0].id;
+        const testCasesFileStream = bucket.openDownloadStream(
+          new mongoose.Types.ObjectId(testCasesFileId)
+        );
+        const testCasesFileBuffer = await streamToBuffer(testCasesFileStream);
+        testCasesText = await extractTextFromPdf(testCasesFileBuffer);
+
+        console.log("Test Cases Text:", testCasesText);
+      }
     }
 
     const newAssignment = new Assignment({
@@ -68,6 +167,7 @@ export const uploadAssignment = async (req, res) => {
         : [],
       assignmentText,
       rubricText,
+      testCasesText, // Store the extracted text from test cases
     });
 
     await newAssignment.save();
@@ -124,7 +224,15 @@ export const uploadAssignmentByStudent = async (req, res) => {
         new mongoose.Types.ObjectId(solutionFileId)
       );
       const solutionFileBuffer = await streamToBuffer(solutionFileStream);
-      solutionText = await extractTextFromImage(solutionFileBuffer);
+
+      if (file.mimetype === "application/pdf") {
+        // Extract text from PDF for coding-based assignment
+        solutionText = await extractTextFromPdf(solutionFileBuffer);
+      } else {
+        // Extract text from image for theory-based assignment
+        solutionText = await extractTextFromImage(solutionFileBuffer);
+      }
+
       console.log("Solution Text:", solutionText);
     }
 
@@ -230,69 +338,133 @@ export const getSubmissions = async (req, res) => {
   }
 };
 
+// export const assignmentEvaluation = async (req, res) => {
+//   const { SubmissionId } = req.params;
+//   console.log("Submission ID:", SubmissionId);
+
+//   // Fetch the submission using its ID
+//   const submission = await Submission.findById(SubmissionId);
+//   console.log("Submission:", submission);
+
+//   // now we need to fetch the assignment details using submission.assignmentID
+
+//   const assignment = await Assignment.findById(submission.assignmentID);
+
+//   if (!assignment) {
+//     return res.status(404).json({ message: "Assignment not found" });
+//   }
+
+//   console.log("Assignment:", assignment);
+
+//   console.log(
+//     submission.solutionText,
+//     assignment.assignmentText,
+//     assignment.rubricText
+//   );
+
+//   // Evaluate the submission using OpenAI API
+//   const feedback = await generateFeedback(
+//     submission.solutionText,
+//     assignment.assignmentText,
+//     assignment.rubricText
+//   );
+
+//   // console.log("Feedback:", feedback);
+
+//   if (!feedback) {
+//     return res.status(500).json({ message: "Error generating feedback" });
+//   }
+
+//   // rounding off the score to 2 decimal places
+
+//   const updatedScore = parseFloat(feedback.score.toFixed(2));
+
+//   // save the feedback and score in the submission
+//   const updatedSubmission = await Submission.findByIdAndUpdate(
+//     SubmissionId,
+//     {
+//       feedback: feedback.feedback,
+//       grade: updatedScore,
+//     },
+//     { new: true }
+//   );
+
+//   res.status(200).json({
+//     message: "Submission evaluated successfully",
+//   });
+
+//   try {
+//     // const submission = await Submission.findById(id);
+//   } catch (error) {
+//     console.error("Error fetching submission:", error);
+//     res.status(500).json({ message: "Something went wrong" });
+//   }
+// };
 export const assignmentEvaluation = async (req, res) => {
   const { SubmissionId } = req.params;
   console.log("Submission ID:", SubmissionId);
 
-  // Fetch the submission using its ID
-  const submission = await Submission.findById(SubmissionId);
-  console.log("Submission:", submission);
-
-  // now we need to fetch the assignment details using submission.assignmentID
-
-  const assignment = await Assignment.findById(submission.assignmentID);
-
-  if (!assignment) {
-    return res.status(404).json({ message: "Assignment not found" });
-  }
-
-  console.log("Assignment:", assignment);
-
-  console.log(
-    submission.solutionText,
-    assignment.assignmentText,
-    assignment.rubricText
-  );
-
-  // Evaluate the submission using OpenAI API
-  const feedback = await generateFeedback(
-    submission.solutionText,
-    assignment.assignmentText,
-    assignment.rubricText
-  );
-
-  // console.log("Feedback:", feedback);
-
-  if (!feedback) {
-    return res.status(500).json({ message: "Error generating feedback" });
-  }
-
-  // rounding off the score to 2 decimal places
-
-  const updatedScore = parseFloat(feedback.score.toFixed(2));
-
-  // save the feedback and score in the submission
-  const updatedSubmission = await Submission.findByIdAndUpdate(
-    SubmissionId,
-    {
-      feedback: feedback.feedback,
-      grade: updatedScore,
-    },
-    { new: true }
-  );
-
-  res.status(200).json({
-    message: "Submission evaluated successfully",
-  });
-
   try {
-    // const submission = await Submission.findById(id);
+    // Fetch the submission using its ID
+    const submission = await Submission.findById(SubmissionId);
+    if (!submission) {
+      return res.status(404).json({ message: "Submission not found" });
+    }
+
+    console.log("Submission:", submission);
+
+    // Fetch the assignment details using submission.assignmentID
+    const assignment = await Assignment.findById(submission.assignmentID);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    console.log("Assignment:", assignment);
+
+    let feedback;
+
+    if (assignment.type === "theory") {
+      // Evaluate the theory-based assignment using OpenAI API
+      feedback = await generateFeedback(
+        submission.solutionText,
+        assignment.assignmentText,
+        assignment.rubricText
+      );
+    } else if (assignment.type === "coding") {
+      // Evaluate the coding-based assignment
+      feedback = await evaluateCodingAssignment(
+        submission.solutionText,
+        assignment.assignmentText,
+        assignment.testCasesText
+      );
+    }
+
+    if (!feedback) {
+      return res.status(500).json({ message: "Error generating feedback" });
+    }
+
+    // Rounding off the score to 2 decimal places
+    const updatedScore = parseFloat(feedback.score.toFixed(2));
+
+    // Save the feedback and score in the submission
+    const updatedSubmission = await Submission.findByIdAndUpdate(
+      SubmissionId,
+      {
+        feedback: feedback.feedback,
+        grade: updatedScore,
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Submission evaluated successfully",
+      submission: updatedSubmission,
+    });
   } catch (error) {
-    console.error("Error fetching submission:", error);
+    console.error("Error evaluating submission:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
-
 export const getMArks = async (req, res) => {
   try {
     const { SubmissionId } = req.params;
@@ -318,6 +490,7 @@ export const getMarksByStudents = async (req, res) => {
     // Find all submissions for the given assignment
     const submissions = await Submission.find({
       studentID: userId,
+      assignmentID: AssignmentId,
     });
 
     res.status(200).json(submissions[0].grade);

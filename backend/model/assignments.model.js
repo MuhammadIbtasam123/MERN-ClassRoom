@@ -15,6 +15,7 @@ const assignmentSchema = new mongoose.Schema({
   testCases: [{ type: String }],
   assignmentText: { type: String },
   rubricText: { type: String },
+  testCasesText: { type: String },
   submissions: [
     {
       student: {
